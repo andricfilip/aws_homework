@@ -38,7 +38,7 @@ class ANN_logic:
     # create model for ann with parameters
     def create_model(self, num_of_inputs, num_of_outputs):
         self.model = Sequential()
-        self.model.add(Dense(num_of_inputs,activation  = 'relu',input_shape=(num_of_inputs,))
+        self.model.add(Dense(num_of_inputs,activation  = 'relu',input_shape=(num_of_inputs,)))
         self.model.add(Dense(units=32,activation  = 'relu'))
         self.model.add(Dense(units= 16,activation  = 'relu'))
         self.model.add(Dense(units=1))
