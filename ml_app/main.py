@@ -2,7 +2,7 @@ from fastapi import FastAPI, File, UploadFile, Form
 import pandas as pd
 import json
 # from database import Database 
-from ann_logic.ann import ANN_logic
+from ann_logic import ANN_logic
 
 
 
