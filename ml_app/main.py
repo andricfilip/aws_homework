@@ -20,20 +20,17 @@ def allowed_file(filename):
 
 @app.get("/pathbyid/{mdoel_id}")
 async def get_path_by_id(model_id: str):
-    return database.get_model_path_by_id(model_id)
+    return "pathbyid -> "+model_id
 
 @app.get('/getlist')
 async def getAnnModelList():
-    # indent je da bi json bio lepo formatiran da ne smesti ceo json u jedan red.
-    print(json.dumps(database.get_all_models(),default=lambda o: o.__dict__, indent=4))
-    # return json.dumps(database.get_all_models(),default=lambda o: o.__dict__, indent=4)
-    return database.get_all_models()
+    return "list of models "
 
 
 @app.post("/trainModel") # dekorator
 async def train_model(filename: str = File(...), batch_size: int = Form(...), epochs: int = Form(...), 
     dataset: UploadFile = File(...)):
-    annModel = ANN_logic(file_name=file_name, epochs=epochs,batch_size=batch_size)
+    annModel = ANN_logic(file_name=filename, epochs=epochs,batch_size=batch_size)
     
     return annModel.train_model(dataset.file,epochs, batch_size)
     # return "successful"
@@ -55,26 +52,26 @@ def delete_model(model_name: str ):
     try:
         model_name = model_name
         print(model_name)
-        ann = ANN.delete(model_name)
+        ANN_logic.delete(model_name)
         return "Deleted "+model_name
     except Exception as e:
         return "Bad request"
 
-def predict(model_name: str = Form(...)):
+def predict(model_name: str = Form(...), dataset_name: str = Form(...)):
     print("Prediction")
     model_name = model_name
-    predictions = Ann.predict(model_name, dataset_name)
+    predictions = ANN_logic.predict(model_name, dataset_name)
 
     print(predictions)
 
     if (isinstance(predictions, int)):
-            if(predictions != 500):
-                return "Model receives "+ str(predictions)+" inputs. The prediction file should not have an output column. Check if the file is correct."
-            return "No file on s3"
-        i = 1
-        pred_dict = dict()
-        for prediction in predictions:
-            pred_dict['prediction_' + str(i)] = float(prediction[0])
-            i += 1
+        if(predictions != 500):
+            return "Model receives "+ str(predictions)+" inputs. The prediction file should not have an output column. Check if the file is correct."
+        return "No file on s3"
+    i = 1
+    pred_dict = dict()
+    for prediction in predictions:
+        pred_dict['prediction_' + str(i)] = float(prediction[0])
+        i += 1
 
-        return jsonify(pred_dict)
+    return jsonify(pred_dict)
