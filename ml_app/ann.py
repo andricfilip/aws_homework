@@ -48,7 +48,7 @@ class ANN_logic:
         
             s3.download_file(Bucket = bucket_name, Key = self.file_name+".csv", Filename = os.path.join(UPLOAD_FOLDER, file_name+".csv"))
 
-            data = pd.read_csv(os.path.join(UPLOAD_FOLDER, file_name+".csv"),header=None,names=column_names)
+            data = pd.read_csv(os.path.join(UPLOAD_FOLDER, file_name+".csv"),header=None)
             X = data.iloc[:,0:len(data.columns) - 1]
             y = data.iloc[:,len(data.columns) - 1]
             X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.25)
@@ -61,7 +61,7 @@ class ANN_logic:
 
             self.create_model(len(data.columns) - 1, 1)
 
-            self.model.fit(X_train, y_train, batch_size = self.batch_size, epochs = self.epochs, verbose = 1)
+            self.model.fit(X_train, y_train, batch_size = batch_size, epochs = epochs, verbose = 1)
 
             metrics = self.evaluate_model(X_test, y_test)
             # save model into local storage

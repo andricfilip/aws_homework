@@ -28,11 +28,10 @@ async def getAnnModelList():
 
 
 @app.post("/trainModel") # dekorator
-async def train_model(filename: str = File(...), batch_size: int = Form(...), epochs: int = Form(...), 
-    dataset: UploadFile = File(...)):
+async def train_model(filename: str = File(...), batch_size: int = Form(...), epochs: int = Form(...)):
     annModel = ANN_logic(file_name=filename, epochs=epochs,batch_size=batch_size)
     
-    return annModel.train_model(dataset.file,epochs, batch_size)
+    return annModel.train_model(filename,epochs, batch_size)
     # return "successful"
 
 # @app.post("/predictValues")
