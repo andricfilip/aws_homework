@@ -3,17 +3,15 @@ import imp
 from requests import head
 from sklearn.preprocessing import LabelEncoder
 import tensorflow as tf
-import uuid
 import os 
 import boto3
-import conf as conf 
 import pandas as pd
 from sklearn.preprocessing import StandardScaler
 from tensorflow import keras
 from keras import Sequential, layers
 from keras.layers import Dense
 from keras.models import load_model
-from database import Database
+# from database import Database
 from sklearn.model_selection import LeaveOneGroupOut, train_test_split
 
 UPLOAD_FOLDER = 'models'
