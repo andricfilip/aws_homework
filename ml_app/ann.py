@@ -1,6 +1,3 @@
-from genericpath import exists
-import imp
-from requests import head
 from sklearn.preprocessing import LabelEncoder
 import tensorflow as tf
 import os 
@@ -16,7 +13,7 @@ from sklearn.model_selection import LeaveOneGroupOut, train_test_split
 
 UPLOAD_FOLDER = 'models'
 s3 = boto3.client("s3")
-dynamo = boto3.client("dynamodb")
+# dynamo = boto3.client("dynamodb")
 
 table_name = "andric_homework"
 bucket_name = "lossless_bucket"
@@ -73,15 +70,15 @@ class ANN_logic:
             print(metrics)
 
             
-            self.delete_from_database(os.path.splitext(file_name)[0])
-            dynamo.put_item(
-                TableName = table_name,
-                Item = {
-                    'file_name': {'S': os.path.splitext(file_name)[0]+".csv"},
-                    'mse': {'S': str(round(metrics[0],2))},
-                    'mae': {'S': str(round(metrics[1],2))}
-                }
-            )           
+            # self.delete_from_database(os.path.splitext(file_name)[0])
+            # dynamo.put_item(
+            #     TableName = table_name,
+            #     Item = {
+            #         'file_name': {'S': os.path.splitext(file_name)[0]+".csv"},
+            #         'mse': {'S': str(round(metrics[0],2))},
+            #         'mae': {'S': str(round(metrics[1],2))}
+            #     }
+            # )           
             return "OK"
         except Exception as ex:
             print(ex)
@@ -121,17 +118,17 @@ class ANN_logic:
         except Exception as e:
             print("Folder doesn't exists.")
 
-        self.delete_from_database(model_name)
+        # self.delete_from_database(model_name)
 
     # delete from dynamo db
-    def delete_from_database(self, model_name):
-        try:
-            table = boto3.resource("dynamodb").Table(table_name)
-            table.delete_item(
-                Key = {'file_name': model_name+".csv"}
-            )
-        except Exception as e:
-            print("No model in database")
+    # def delete_from_database(self, model_name):
+    #     try:
+    #         table = boto3.resource("dynamodb").Table(table_name)
+    #         table.delete_item(
+    #             Key = {'file_name': model_name+".csv"}
+    #         )
+    #     except Exception as e:
+    #         print("No model in database")
 
 
 
