@@ -1,0 +1,167 @@
+from genericpath import exists
+import imp
+from requests import head
+from sklearn.preprocessing import LabelEncoder
+import tensorflow as tf
+import uuid
+import os 
+import boto3
+import conf as conf 
+import pandas as pd
+from sklearn.preprocessing import StandardScaler
+from tensorflow import keras
+from keras import Sequential, layers
+from keras.layers import Dense
+from keras.models import load_model
+from database import Database
+from sklearn.model_selection import LeaveOneGroupOut, train_test_split
+
+UPLOAD_FOLDER = 'models'
+s3 = boto3.client("s3")
+dynamo = boto3.client("dynamodb")
+
+table_name = "andric_homework"
+bucket_name = "andric_homework_bucket"
+
+class ANN_logic:
+    def __init__(self, file_name, epochs, batch_size):
+        self.file_name = model_name
+        self.epochs = epochs
+        self.batch_size = batch_size
+
+        print("-------------------------")
+        print(self.file_name)
+        print(self.epochs)
+        print(self.batch_size)
+        print("-------------------------")
+
+    # create model for ann with parameters
+    def create_model(self, num_of_inputs, num_of_outputs):
+        self.model = Sequential()
+        self.model.add(Dense(num_of_inputs,activation  = 'relu',input_shape=(num_of_inputs,))
+        self.model.add(Dense(units=32,activation  = 'relu'))
+        self.model.add(Dense(units= 16,activation  = 'relu'))
+        self.model.add(Dense(units=1))
+        self.model.compile(optimizer = 'adam',loss = 'mean_squared_error')
+
+        self.model.compile(optimizer = self.optimizer, loss = "mse", metrics = ['mae'])
+        
+
+    def train_model(self, file_name, epochs, batch_size):
+
+        s3.download_file(Bucket = bucket_name, Key = self.file_name+".csv", Filename = os.path.join(UPLOAD_FOLDER, file_name+".csv"))
+
+        data = pd.read_csv(os.path.join(UPLOAD_FOLDER, file_name+".csv"),header=None,names=column_names)
+        X = data.iloc[:,0:len(data.columns) - num_of_outputs]
+        y = data.iloc[:,len(data.columns) - num_of_outputs]
+        X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.25)
+
+        sc = StandardScaler()
+        X_train = sc.fit_transform(X_train)
+        X_test = sc.transform(X_test)
+        
+   
+
+        self.create_model(len(data.columns) - num_of_outputs, num_of_outputs)
+
+        self.model.fit(X_train, y_train, batch_size = self.batch_size, epochs = self.epochs, verbose = 1)
+
+        metrics = self.evaluate_model(X_test, y_test)
+        # save model into local storage
+        self.save_model()
+        s3.upload_file(Filename = os.path.join(UPLOAD_FOLDER, file_name + ".h5"), Bucket = s3_bucket_name, Key = file_name +".h5")
+        print(metrics)
+
+        db = Database.getInstance()
+        db.add_model(self.model_name, metrics["mae"][0], metrics["mae"][1], metrics["mae"][1], os.path.join(self.model_name,model_uuid))
+
+        dynamo.put_item(
+            TableName = table_name,
+            Item = {
+                'file_name': {'S': os.path.splitext(file_name)[0]+".csv"},
+                'mse': {'S': str(round(scores[0],2))},
+                'mae': {'S': str(round(scores[1],2))}
+            }
+        )           
+        return "OK"
+        # return metrics
+
+
+    def evaluate_model(self, X_test,y_test):
+        mae = self.model.evaluate(X_test,y_test,verbose = 0)
+        return {
+            "mae":mae
+        }
+
+
+    def predict(self, model_name,file_name):
+        try:
+            s3.download_file(Bucket = s3_bucket_name, Key = model_name+".h5", Filename = os.oath.join(UPLOAD_FOLDER, model_name,+".h5"))
+            s3.download_file(Bucket = s3_bucket_name, Key = dataset_name+".csv", Filename = os.path.join(UPLOAD_FOLDER, dataset_name+".csv"))
+        except Exception as e:
+            print("Folder does not exists.")
+            return 500
+        
+        model = load_model(os.path.join(UPLOAD_FOLDER, model_name + ".h5"))
+        X_test = pd.read_csv(os.path.join(UPLOAD_FOLDER,dataset_name+".csv"))
+        config = model.get_config() #-------------------------------------------------------------
+        numInputs = config["layers"][0]["config"]["batch_input_shape"][1]
+        if(X_test.shape[1] != numInputs):
+            return numInputs
+
+        return model.predict(X_test)
+
+
+    # delete form s3 bucket
+    def delete(self, model_name):
+        try:
+            s3.delete_object(Bucket = s3_bucket_name, Key = model_name+".h5")
+        except Exception as e:
+            print("Folder doesn't exists.");
+
+        self.delete_from_database(model_name);
+
+    # delete from dynamo db
+    def delete_from_database(self, model_name):
+        try:
+            table = boto3.resource("dynamodb").Table(table_name)
+            table.delete_item(
+                Key = {'file_name': model_name+".csv"}
+            )
+        except Exception as e:
+            print("No model in database")
+
+
+
+
+
+
+
+    
+
+    def save_model(self):
+        # model_uuid = uuid.uuid1()
+        # model_uuid = str(model_uuid)
+        # if not os.path.exists("./"+conf.storage_path):
+        #     os.makedirs("./"+conf.storage_path,exist_ok=True)
+        # os.makedirs(os.path.join(conf.storage_path,self.model_name),exist_ok=True)
+        self.model.save(os.path.join(conf.storage_path,self.model_name,model_uuid+".h5"))
+        
+        # return model_uuid
+
+
+    def load_model(model_path):
+        return load_model(os.path.join(conf.storage_path, model_path+".h5"))
+
+
+    def set_default_parameters(self):
+        if self.optimizer is None:
+            self.optimizer = 'Adam'
+        if self.epochs is None:
+            self.epochs = 5
+        if self.batch_size is None:
+            self.batch_size = 32
+        if self.h_activation is None:
+            self.h_activation = 'sigmoid'
+        if self.o_activation is None:
+            self.o_activation = 'sigmoid'
