@@ -35,15 +35,15 @@ async def train_model(filename: str = File(...), batch_size: int = Form(...), ep
     return annModel.train_model(dataset.file,epochs, batch_size)
     # return "successful"
 
-@app.post("/predictValues")
-async def predict_values(model_id: str = Form(...), num_of_outputs: int = Form(...), dataset: UploadFile = File(...)):
+# @app.post("/predictValues")
+# async def predict_values(model_id: str = Form(...), num_of_outputs: int = Form(...), dataset: UploadFile = File(...)):
 
-    path = database.get_model_path_by_id(model_id)
-    arr = ANN_logic.predict(ANN_logic.load_model(path), dataset.file, num_of_outputs)
-    # df = pd.read_csv(dataset.file)
+#     path = database.get_model_path_by_id(model_id)
+#     arr = ANN_logic.predict(ANN_logic.load_model(path), dataset.file, num_of_outputs)
+#     # df = pd.read_csv(dataset.file)
 
-    # print(df.head)
-    return {"predictions": arr[:, 0].tolist()}
+#     # print(df.head)
+#     return {"predictions": arr[:, 0].tolist()}
     # return {"predictions": "prediction !!!! "}
 
 
