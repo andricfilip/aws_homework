@@ -1,3 +1,4 @@
+from fileinput import filename
 from sklearn.preprocessing import LabelEncoder
 import tensorflow as tf
 import os 
@@ -46,7 +47,7 @@ class ANN_logic:
         try:
 
         
-            s3.download_file(Bucket = bucket_name, Key = self.file_name+".csv", Filename = os.path.join(UPLOAD_FOLDER, file_name+".csv"))
+            s3.download_file(Bucket = bucket_name, Key = file_name+".csv", Filename = os.path.join(UPLOAD_FOLDER, file_name+".csv"))
 
             data = pd.read_csv(os.path.join(UPLOAD_FOLDER, file_name+".csv"),header=None)
             X = data.iloc[:,0:len(data.columns) - 1]
