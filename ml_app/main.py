@@ -49,9 +49,10 @@ async def train_model(filename: str = File(...), batch_size: int = Form(...), ep
 @app.delete('/delete/{model_name}')
 def delete_model(model_name: str ):
     try:
-        model_name = model_name
+        
         print(model_name)
-        ANN_logic.delete(model_name)
+        ann = ANN_logic()
+        ann.delete(model_name)
         return "Deleted "+model_name
     except Exception as e:
         return "Bad request"
