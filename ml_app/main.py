@@ -52,7 +52,6 @@ async def delete_model(model_name: str = Form(...) ):
         
         print(model_name)
         ann = ANN_logic()
-        # ANN_logic.delete(model_name=model_name)
         ann.delete(model_name)
         return "Deleted "+model_name
     # except Exception as e:
@@ -75,4 +74,5 @@ def predict(model_name: str = Form(...), dataset_name: str = Form(...)):
         pred_dict['prediction_' + str(i)] = float(prediction[0])
         i += 1
 
-    return jsonify(pred_dict)
+    # return jsonify(pred_dict)
+    return pred_dict
