@@ -20,10 +20,10 @@ def allowed_file(filename):
 
 
 @app.post("/trainModel/{file_name}/{batch_size}/{epochs}") # dekorator
-async def train_model(filename: str, batch_size: int, epochs: int):
+async def train_model(file_name: str, batch_size: int, epochs: int):
     annModel = ANN_logic()
     
-    return annModel.train_model(filename,epochs, batch_size)
+    return annModel.train_model(file_name,epochs, batch_size)
     # return "successful"
 
 # @app.post("/predictValues")
