@@ -55,7 +55,7 @@ def delete_model(model_name: str ):
         return "Deleted "+model_name
     except Exception as e:
         return "Bad request"
-
+@app.post("/predictValues")
 def predict(model_name: str = Form(...), dataset_name: str = Form(...)):
     print("Prediction")
     model_name = model_name

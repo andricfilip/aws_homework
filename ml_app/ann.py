@@ -16,7 +16,7 @@ from sklearn.model_selection import LeaveOneGroupOut, train_test_split
 s3 = boto3.client("s3")
 # dynamo = boto3.client("dynamodb")
 
-table_name = "andric_homework"
+table_name = "andric-homework"
 bucket_name = "lossless-bucket"
 
 class ANN_logic:
