@@ -1,3 +1,4 @@
+from email import header
 from fileinput import filename
 from sklearn.preprocessing import LabelEncoder
 import tensorflow as tf
@@ -49,6 +50,7 @@ class ANN_logic:
         s3.download_file(Bucket = bucket_name, Key = file_name+".csv", Filename =  file_name+".csv")
 
         data = pd.read_csv(file_name+".csv",header=None)
+        print(data.head())
         X = data.iloc[:,0:len(data.columns) - 1]
         y = data.iloc[:,len(data.columns) - 1]
         X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.25)
