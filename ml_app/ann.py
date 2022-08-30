@@ -118,11 +118,11 @@ class ANN_logic:
 
     # delete form s3 bucket
     def delete(self, model_name):
-        try:
+        # try:
             print(model_name)
             s3.delete_object(Bucket = bucket_name, Key = model_name+".h5")
-        except Exception as e:
-            print("Folder doesn't exists.")
+        # except Exception as e:
+            # print("Folder doesn't exists.")
 
         # self.delete_from_database(model_name)
 
