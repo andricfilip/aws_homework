@@ -20,6 +20,10 @@ table_name = "andric-homework"
 bucket_name = "lossless-bucket"
 
 class ANN_logic:
+
+    def __init__(self) -> None:
+        pass
+
     def __init__(self, file_name, epochs, batch_size):
         self.file_name = file_name
         self.epochs = epochs
