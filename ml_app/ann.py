@@ -38,9 +38,8 @@ class ANN_logic:
         self.model.add(Dense(units=32,activation  = 'relu'))
         self.model.add(Dense(units= 16,activation  = 'relu'))
         self.model.add(Dense(units=1))
-        self.model.compile(optimizer = 'adam',loss = 'mean_squared_error')
 
-        self.model.compile(optimizer = self.optimizer, loss = "mse", metrics = ['mae'])
+        self.model.compile(optimizer = 'adam', loss = "mse", metrics = ['mae'])
         
 
     def train_model(self, file_name, epochs, batch_size):
@@ -49,7 +48,7 @@ class ANN_logic:
         
         s3.download_file(Bucket = bucket_name, Key = file_name+".csv", Filename =  file_name+".csv")
 
-        data = pd.read_csv(file_name+".csv")
+        data = pd.read_csv(file_name+".csv",header=None)
         print(data.head())
         X = data.iloc[:,0:len(data.columns) - 1]
         y = data.iloc[:,len(data.columns) - 1]
