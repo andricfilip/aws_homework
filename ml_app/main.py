@@ -46,7 +46,7 @@ async def train_model(filename: str = File(...), batch_size: int = Form(...), ep
     # return {"predictions": "prediction !!!! "}
 
 
-@app.post('/delete/{model_name}')
+@app.post('/delete')
 async def delete_model(model_name: str = Form(...) ):
     try:
         
