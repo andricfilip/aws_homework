@@ -12,7 +12,6 @@ from keras.models import load_model
 # from database import Database
 from sklearn.model_selection import LeaveOneGroupOut, train_test_split
 
-UPLOAD_FOLDER = 'models'
 s3 = boto3.client("s3")
 # dynamo = boto3.client("dynamodb")
 
@@ -47,9 +46,9 @@ class ANN_logic:
         # try:
 
         
-        s3.download_file(Bucket = bucket_name, Key = file_name+".csv", Filename = os.path.join(UPLOAD_FOLDER, file_name+".csv"))
+        s3.download_file(Bucket = bucket_name, Key = file_name+".csv", Filename =  file_name+".csv")
 
-        data = pd.read_csv(os.path.join(UPLOAD_FOLDER, file_name+".csv"),header=None)
+        data = pd.read_csv(file_name+".csv",header=None)
         X = data.iloc[:,0:len(data.columns) - 1]
         y = data.iloc[:,len(data.columns) - 1]
         X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.25)
@@ -67,7 +66,7 @@ class ANN_logic:
         metrics = self.evaluate_model(X_test, y_test)
         # save model into local storage
         self.save_model()
-        s3.upload_file(Filename = os.path.join(UPLOAD_FOLDER, file_name + ".h5"), Bucket = bucket_name, Key = file_name +".h5")
+        s3.upload_file(Filename =  file_name + ".h5", Bucket = bucket_name, Key = file_name +".h5")
         print(metrics)
 
             
@@ -102,8 +101,8 @@ class ANN_logic:
             print("Folder does not exists.")
             return 500
         
-        model = load_model(os.path.join(UPLOAD_FOLDER, model_name + ".h5"))
-        X_test = pd.read_csv(os.path.join(UPLOAD_FOLDER,file_name+".csv"))
+        model = load_model(model_name + ".h5")
+        X_test = pd.read_csv(file_name+".csv")
         config = model.get_config() #-------------------------------------------------------------
         numInputs = config["layers"][0]["config"]["batch_input_shape"][1]
         if(X_test.shape[1] != numInputs):
