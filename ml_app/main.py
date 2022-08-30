@@ -51,7 +51,6 @@ async def delete_model(model_name: str = Form(...) ):
 @app.post("/predictValues")
 def predict(model_name: str = Form(...), dataset_name: str = Form(...)):
     print("Prediction")
-    model_name = model_name
     ann = ANN_logic()
     predictions = ann.predict(model_name, dataset_name)
 

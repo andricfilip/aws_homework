@@ -100,8 +100,8 @@ class ANN_logic:
 
     def predict(self, model_name,file_name):
         try:
-            s3.download_file(Bucket = bucket_name, Key = model_name+".h5", Filename = os.path.join(UPLOAD_FOLDER, model_name,+".h5"))
-            s3.download_file(Bucket = bucket_name, Key = file_name+".csv", Filename = os.path.join(UPLOAD_FOLDER, file_name+".csv"))
+            s3.download_file(Bucket = bucket_name, Key = model_name+".h5", Filename = model_name+".h5")
+            s3.download_file(Bucket = bucket_name, Key = file_name+".csv", Filename = file_name+".csv")
         except Exception as e:
             print("Folder does not exists.")
             return 500
