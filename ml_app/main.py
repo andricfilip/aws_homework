@@ -52,6 +52,7 @@ async def delete_model(model_name: str ):
         
         print(model_name)
         ann = ANN_logic()
+        ANN_logic.delete(model_name=model_name)
         ann.delete(model_name)
         return "Deleted "+model_name
     except Exception as e:
