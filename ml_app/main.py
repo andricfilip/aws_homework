@@ -47,7 +47,7 @@ async def train_model(filename: str = File(...), batch_size: int = Form(...), ep
 
 
 @app.post('/delete/{model_name}')
-async def delete_model(model_name: str ):
+async def delete_model(model_name: str = Form(...) ):
     try:
         
         print(model_name)
