@@ -6,7 +6,6 @@ import json
 
 
 
-UPLOAD_FOLDER = 'models'
 ALLOWED_EXTENSIONS = {'txt', 'pdf', 'csv', 'xlsx'}
 
 # database = Database.getInstance()
@@ -18,18 +17,11 @@ def allowed_file(filename):
     return '.' in filename and \
            filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
-@app.get("/pathbyid/{mdoel_id}")
-async def get_path_by_id(model_id: str):
-    return "pathbyid -> "+model_id
-
-@app.get('/getlist')
-async def getAnnModelList():
-    return "list of models "
 
 
 @app.post("/trainModel") # dekorator
 async def train_model(filename: str = File(...), batch_size: int = Form(...), epochs: int = Form(...)):
-    annModel = ANN_logic(file_name=filename, epochs=epochs,batch_size=batch_size)
+    annModel = ANN_logic()
     
     return annModel.train_model(filename,epochs, batch_size)
     # return "successful"
@@ -60,7 +52,8 @@ async def delete_model(model_name: str = Form(...) ):
 def predict(model_name: str = Form(...), dataset_name: str = Form(...)):
     print("Prediction")
     model_name = model_name
-    predictions = ANN_logic.predict(model_name, dataset_name)
+    ann = ANN_logic()
+    predictions = ann.predict(model_name, dataset_name)
 
     print(predictions)
 
