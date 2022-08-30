@@ -48,7 +48,7 @@ class ANN_logic:
         
         s3.download_file(Bucket = bucket_name, Key = file_name+".csv", Filename =  file_name+".csv")
 
-        data = pd.read_csv(file_name+".csv",header=None)
+        data = pd.read_csv(file_name+".csv")
         print(data.head())
         X = data.iloc[:,0:len(data.columns) - 1]
         y = data.iloc[:,len(data.columns) - 1]
