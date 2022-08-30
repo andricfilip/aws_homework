@@ -19,8 +19,8 @@ def allowed_file(filename):
 
 
 
-@app.post("/trainModel") # dekorator
-async def train_model(filename: str = File(...), batch_size: int = Form(...), epochs: int = Form(...)):
+@app.post("/trainModel/{file_name}/{batch_size}/{epochs}") # dekorator
+async def train_model(filename: str, batch_size: int, epochs: int):
     annModel = ANN_logic()
     
     return annModel.train_model(filename,epochs, batch_size)
@@ -38,8 +38,8 @@ async def train_model(filename: str = File(...), batch_size: int = Form(...), ep
     # return {"predictions": "prediction !!!! "}
 
 
-@app.post('/delete')
-async def delete_model(model_name: str = Form(...) ):
+@app.post('/delete/{model_name}')
+async def delete_model(model_name: str):
     # try:
         
         print(model_name)
@@ -48,8 +48,8 @@ async def delete_model(model_name: str = Form(...) ):
         return "Deleted "+model_name
     # except Exception as e:
     #     return "Bad request"
-@app.post("/predictValues")
-def predict(model_name: str = Form(...), dataset_name: str = Form(...)):
+@app.post("/predictValues/{model_name}/{dataset_name}")
+def predict(model_name: str, dataset_name: str):
     print("Prediction")
     ann = ANN_logic()
     predictions = ann.predict(model_name, dataset_name)
