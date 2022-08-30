@@ -66,7 +66,7 @@ class ANN_logic:
 
         metrics = self.evaluate_model(X_test, y_test)
         # save model into local storage
-        self.save_model()
+        self.model.save(filename+".h5")
         s3.upload_file(Filename =  file_name + ".h5", Bucket = bucket_name, Key = file_name +".h5")
         print(metrics)
 
