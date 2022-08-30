@@ -44,31 +44,31 @@ class ANN_logic:
         
 
     def train_model(self, file_name, epochs, batch_size):
-        try:
+        # try:
 
         
-            s3.download_file(Bucket = bucket_name, Key = file_name+".csv", Filename = os.path.join(UPLOAD_FOLDER, file_name+".csv"))
+        s3.download_file(Bucket = bucket_name, Key = file_name+".csv", Filename = os.path.join(UPLOAD_FOLDER, file_name+".csv"))
 
-            data = pd.read_csv(os.path.join(UPLOAD_FOLDER, file_name+".csv"),header=None)
-            X = data.iloc[:,0:len(data.columns) - 1]
-            y = data.iloc[:,len(data.columns) - 1]
-            X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.25)
+        data = pd.read_csv(os.path.join(UPLOAD_FOLDER, file_name+".csv"),header=None)
+        X = data.iloc[:,0:len(data.columns) - 1]
+        y = data.iloc[:,len(data.columns) - 1]
+        X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.25)
 
-            sc = StandardScaler()
-            X_train = sc.fit_transform(X_train)
-            X_test = sc.transform(X_test)
-            
-    
+        sc = StandardScaler()
+        X_train = sc.fit_transform(X_train)
+        X_test = sc.transform(X_test)
+        
 
-            self.create_model(len(data.columns) - 1, 1)
 
-            self.model.fit(X_train, y_train, batch_size = batch_size, epochs = epochs, verbose = 1)
+        self.create_model(len(data.columns) - 1, 1)
 
-            metrics = self.evaluate_model(X_test, y_test)
-            # save model into local storage
-            self.save_model()
-            s3.upload_file(Filename = os.path.join(UPLOAD_FOLDER, file_name + ".h5"), Bucket = bucket_name, Key = file_name +".h5")
-            print(metrics)
+        self.model.fit(X_train, y_train, batch_size = batch_size, epochs = epochs, verbose = 1)
+
+        metrics = self.evaluate_model(X_test, y_test)
+        # save model into local storage
+        self.save_model()
+        s3.upload_file(Filename = os.path.join(UPLOAD_FOLDER, file_name + ".h5"), Bucket = bucket_name, Key = file_name +".h5")
+        print(metrics)
 
             
             # self.delete_from_database(os.path.splitext(file_name)[0])
@@ -80,10 +80,10 @@ class ANN_logic:
             #         'mae': {'S': str(round(metrics[1],2))}
             #     }
             # )           
-            return "OK"
-        except Exception as ex:
-            print(ex)
-            return "BadRequest"
+        #     return "OK"
+        # except Exception as ex:
+        #     print(ex)
+        #     return "BadRequest"
         # return metrics
 
 
