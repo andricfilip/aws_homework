@@ -21,19 +21,19 @@ bucket_name = "lossless-bucket"
 
 class ANN_logic:
 
-    def __init__(self) -> None:
-        pass
+    # def __init__(self) -> None:
+    #     pass
 
-    def __init__(self, file_name, epochs, batch_size):
-        self.file_name = file_name
-        self.epochs = epochs
-        self.batch_size = batch_size
+    # def __init__(self, file_name, epochs, batch_size):
+    #     self.file_name = file_name
+    #     self.epochs = epochs
+    #     self.batch_size = batch_size
 
-        print("-------------------------")
-        print(self.file_name)
-        print(self.epochs)
-        print(self.batch_size)
-        print("-------------------------")
+    #     print("-------------------------")
+    #     print(self.file_name)
+    #     print(self.epochs)
+    #     print(self.batch_size)
+    #     print("-------------------------")
 
     # create model for ann with parameters
     def create_model(self, num_of_inputs, num_of_outputs):
