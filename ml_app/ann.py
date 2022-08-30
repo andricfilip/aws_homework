@@ -17,7 +17,7 @@ s3 = boto3.client("s3")
 # dynamo = boto3.client("dynamodb")
 
 table_name = "andric_homework"
-bucket_name = "lossless_bucket"
+bucket_name = "lossless-bucket"
 
 class ANN_logic:
     def __init__(self, file_name, epochs, batch_size):
