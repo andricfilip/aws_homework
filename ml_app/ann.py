@@ -79,9 +79,9 @@ class ANN_logic:
         dynamo.put_item(
             TableName = table_name,
             Item = {
-                'file_name': {'S': os.path.splitext(file_name)[0]+".csv"},
-                'mse': {'S': str(round(metrics[0],2))},
-                'mae': {'S': str(round(metrics[1],2))}
+                "file_name": {"S": os.path.splitext(file_name)[0]+".csv"},
+                "mse": {"S": str(round(metrics[0],2))},
+                "mae": {"S": str(round(metrics[1],2))}
             }
         )           
         return "OK"
