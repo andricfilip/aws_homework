@@ -14,9 +14,9 @@ from keras.models import load_model
 from sklearn.model_selection import LeaveOneGroupOut, train_test_split
 
 s3 = boto3.client("s3")
-# dynamo = boto3.client("dynamodb")
+dynamo = boto3.client("dynamodb")
 
-table_name = "andric-homework"
+table_name = "lossless_db"
 bucket_name = "lossless-bucket"
 
 class ANN_logic:
@@ -47,48 +47,48 @@ class ANN_logic:
         
 
     def train_model(self, file_name, epochs, batch_size):
-        # try:
+        try:
 
         
-        s3.download_file(Bucket = bucket_name, Key = file_name+".csv", Filename =  file_name+".csv")
+            s3.download_file(Bucket = bucket_name, Key = file_name+".csv", Filename =  file_name+".csv")
 
-        data = pd.read_csv(file_name+".csv")
-        print(data.head())
-        X = data.iloc[:,0:len(data.columns) - 1]
-        y = data.iloc[:,len(data.columns) - 1]
-        X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.25)
+            data = pd.read_csv(file_name+".csv")
+            print(data.head())
+            X = data.iloc[:,0:len(data.columns) - 1]
+            y = data.iloc[:,len(data.columns) - 1]
+            X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.25)
 
-        sc = StandardScaler()
-        X_train = sc.fit_transform(X_train)
-        X_test = sc.transform(X_test)
-        
-
-
-        self.create_model(len(data.columns) - 1, 1)
-
-        self.model.fit(X_train, y_train, batch_size = batch_size, epochs = epochs, verbose = 1)
-
-        metrics = self.evaluate_model(X_test, y_test)
-        # save model into local storage
-        self.model.save(file_name+".h5")
-        s3.upload_file(Filename =  file_name + ".h5", Bucket = bucket_name, Key = file_name +".h5")
-        print(metrics)
-
+            sc = StandardScaler()
+            X_train = sc.fit_transform(X_train)
+            X_test = sc.transform(X_test)
             
-            # self.delete_from_database(os.path.splitext(file_name)[0])
-            # dynamo.put_item(
-            #     TableName = table_name,
-            #     Item = {
-            #         'file_name': {'S': os.path.splitext(file_name)[0]+".csv"},
-            #         'mse': {'S': str(round(metrics[0],2))},
-            #         'mae': {'S': str(round(metrics[1],2))}
-            #     }
-            # )           
-        #     return "OK"
-        # except Exception as ex:
-        #     print(ex)
-        #     return "BadRequest"
-        # return metrics
+
+
+            self.create_model(len(data.columns) - 1, 1)
+
+            self.model.fit(X_train, y_train, batch_size = batch_size, epochs = epochs, verbose = 1)
+
+            metrics = self.evaluate_model(X_test, y_test)
+            # save model into local storage
+            self.model.save(file_name+".h5")
+            s3.upload_file(Filename =  file_name + ".h5", Bucket = bucket_name, Key = file_name +".h5")
+            print(metrics)
+
+                
+            self.delete_from_database(os.path.splitext(file_name)[0])
+            dynamo.put_item(
+                TableName = table_name,
+                Item = {
+                    'file_name': {'S': os.path.splitext(file_name)[0]+".csv"},
+                    'mse': {'S': str(round(metrics[0],2))},
+                    'mae': {'S': str(round(metrics[1],2))}
+                }
+            )           
+            return "OK"
+        except Exception as ex:
+            print(ex)
+            return "BadRequest"
+        return metrics
 
 
     def evaluate_model(self, X_test,y_test):
@@ -118,23 +118,23 @@ class ANN_logic:
 
     # delete form s3 bucket
     def delete(self, model_name):
-        # try:
+        try:
             print(model_name)
             s3.delete_object(Bucket = bucket_name, Key = model_name+".h5")
-        # except Exception as e:
-            # print("Folder doesn't exists.")
+        except Exception as e:
+            print("Folder doesn't exists.")
 
-        # self.delete_from_database(model_name)
+        self.delete_from_database(model_name)
 
     # delete from dynamo db
-    # def delete_from_database(self, model_name):
-    #     try:
-    #         table = boto3.resource("dynamodb").Table(table_name)
-    #         table.delete_item(
-    #             Key = {'file_name': model_name+".csv"}
-    #         )
-    #     except Exception as e:
-    #         print("No model in database")
+    def delete_from_database(self, model_name):
+        try:
+            table = boto3.resource("dynamodb").Table(table_name)
+            table.delete_item(
+                Key = {'file_name': model_name+".csv"}
+            )
+        except Exception as e:
+            print("No model in database")
 
 
 
