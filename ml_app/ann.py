@@ -119,32 +119,3 @@ class ANN_logic:
 
 
 
-
-    
-
-    # def save_model(self):
-    #     # model_uuid = uuid.uuid1()
-    #     # model_uuid = str(model_uuid)
-    #     # if not os.path.exists("./"+conf.storage_path):
-    #     #     os.makedirs("./"+conf.storage_path,exist_ok=True)
-    #     # os.makedirs(os.path.join(conf.storage_path,self.model_name),exist_ok=True)
-    #     self.model.save(os.path.join(conf.storage_path,self.model_name,model_uuid+".h5"))
-        
-    #     # return model_uuid
-
-
-    def load_model(model_path):
-        return load_model(os.path.join(conf.storage_path, model_path+".h5"))
-
-
-    def set_default_parameters(self):
-        if self.optimizer is None:
-            self.optimizer = 'Adam'
-        if self.epochs is None:
-            self.epochs = 5
-        if self.batch_size is None:
-            self.batch_size = 32
-        if self.h_activation is None:
-            self.h_activation = 'sigmoid'
-        if self.o_activation is None:
-            self.o_activation = 'sigmoid'
