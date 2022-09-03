@@ -68,8 +68,8 @@ class ANN_logic:
 
         self.model.fit(X_train, y_train, batch_size = batch_size, epochs = epochs, verbose = 0)
 
-        metrics = self.evaluate_model(X_test, y_test)
-        print(metrics.shape)
+        metrics = self.model.evaluate_model(X_test, y_test)
+        print(metrics)
         # save model into local storage
         self.model.save(file_name+".h5")
         s3.upload_file(Filename =  file_name + ".h5", Bucket = bucket_name, Key = file_name +".h5")
