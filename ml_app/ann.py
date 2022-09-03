@@ -14,7 +14,7 @@ from keras.models import load_model
 from sklearn.model_selection import LeaveOneGroupOut, train_test_split
 
 s3 = boto3.client("s3")
-dynamo = boto3.client("dynamodb")
+dynamo = boto3.client("dynamodb", region_name='eu-central-1')
 
 table_name = "lossless_db"
 bucket_name = "andric-1023-2021"
