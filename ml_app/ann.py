@@ -107,6 +107,7 @@ class ANN_logic:
     # delete from dynamo db
     def delete_from_database(self, model_name):
         # try:
+            print("===========================delete_from_database=====================")
             table = dynamo.resource("dynamodb").Table(table_name)
             table.delete_item(
                 Key = {"file_name": model_name+".csv"}
