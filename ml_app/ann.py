@@ -101,13 +101,13 @@ class ANN_logic:
             print(model_name)
             s3.delete_object(Bucket = bucket_name, Key = model_name+".h5")
         except Exception as e:
-            print("Folder doesn't exists.")
+            print("File does not exists.")
 
 
     # delete from dynamo db
     def delete_from_database(self, model_name):
         # try:
-            table = boto3.resource("dynamodb").Table(table_name)
+            table = dynamo.resource("dynamodb").Table(table_name)
             table.delete_item(
                 Key = {"file_name": model_name+".csv"}
             )
