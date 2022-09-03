@@ -68,7 +68,7 @@ class ANN_logic:
 
         self.model.fit(X_train, y_train, batch_size = batch_size, epochs = epochs, verbose = 0)
 
-        metrics = self.model.evaluate_model(X_test, y_test)
+        metrics = self.model.evaluate(X_test, y_test)
         print(metrics)
         # save model into local storage
         self.model.save(file_name+".h5")
