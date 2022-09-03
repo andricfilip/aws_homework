@@ -109,7 +109,7 @@ class ANN_logic:
         try:
             table = boto3.resource("dynamodb").Table(table_name)
             table.delete_item(
-                Key = {'file_name': model_name+".csv"}
+                Key = {"file_name": model_name+".csv"}
             )
         except Exception as e:
             print("No model in database")
