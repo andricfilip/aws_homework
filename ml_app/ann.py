@@ -16,25 +16,10 @@ from sklearn.model_selection import LeaveOneGroupOut, train_test_split
 s3 = boto3.client("s3")
 dynamo = boto3.client("dynamodb", region_name='eu-central-1')
 
-table_name = "lossless_db"
+table_name = "andric-1023-2021-dynamodb"
 bucket_name = "andric-1023-2021"
 
 class ANN_logic:
-
-    # def __init__(self) -> None:
-    #     pass
-
-    # def __init__(self, file_name, epochs, batch_size):
-    #     self.file_name = file_name
-    #     self.epochs = epochs
-    #     self.batch_size = batch_size
-
-    #     print("-------------------------")
-    #     print(self.file_name)
-    #     print(self.epochs)
-    #     print(self.batch_size)
-    #     print("-------------------------")
-
     # create model for ann with parameters
     def create_model(self, num_of_inputs, num_of_outputs):
         self.model = Sequential()
@@ -47,55 +32,48 @@ class ANN_logic:
         
 
     def train_model(self, file_name, epochs, batch_size):
-        # try:
+        try:
 
         
-        s3.download_file(Bucket = bucket_name, Key = file_name+".csv", Filename =  file_name+".csv")
+            s3.download_file(Bucket = bucket_name, Key = file_name+".csv", Filename =  file_name+".csv")
 
-        data = pd.read_csv(file_name+".csv")
-        print(data.head())
-        X = data.iloc[:,0:len(data.columns) - 1]
-        y = data.iloc[:,len(data.columns) - 1]
-        X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.25)
+            data = pd.read_csv(file_name+".csv")
+            print(data.head())
+            X = data.iloc[:,0:len(data.columns) - 1]
+            y = data.iloc[:,len(data.columns) - 1]
+            X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.25)
 
-        sc = StandardScaler()
-        X_train = sc.fit_transform(X_train)
-        X_test = sc.transform(X_test)
-        
-
-
-        self.create_model(len(data.columns) - 1, 1)
-
-        self.model.fit(X_train, y_train, batch_size = batch_size, epochs = epochs, verbose = 0)
-
-        metrics = self.model.evaluate(X_test, y_test)
-        print(metrics)
-        # save model into local storage
-        self.model.save(file_name+".h5")
-        s3.upload_file(Filename =  file_name + ".h5", Bucket = bucket_name, Key = file_name +".h5")
-        print(metrics)
-
+            sc = StandardScaler()
+            X_train = sc.fit_transform(X_train)
+            X_test = sc.transform(X_test)
             
-        # self.delete_from_database(os.path.splitext(file_name)[0])
-        dynamo.put_item(
-            TableName = table_name,
-            Item = {
-                "file_name": {"S": os.path.splitext(file_name)[0]+".csv"},
-                "mse": {"S": str(round(metrics[0],2))},
-                "mae": {"S": str(round(metrics[1],2))}
-            }
-        )           
-        return "OK"
-        # except Exception as ex:
-        #     print(ex)
-        #     return "BadRequest"
 
 
-    def evaluate_model(self, X_test,y_test):
-        mae = self.model.evaluate(X_test,y_test,verbose = 0)
-        return {
-            "mae":mae
-        }
+            self.create_model(len(data.columns) - 1, 1)
+
+            self.model.fit(X_train, y_train, batch_size = batch_size, epochs = epochs, verbose = 0)
+
+            metrics = self.model.evaluate(X_test, y_test)
+            print(metrics)
+            # save model into local storage
+            self.model.save(file_name+".h5")
+            s3.upload_file(Filename =  file_name + ".h5", Bucket = bucket_name, Key = file_name +".h5")
+            print(metrics)
+
+                
+            self.delete_from_database(os.path.splitext(file_name)[0])
+            dynamo.put_item(
+                TableName = table_name,
+                Item = {
+                    "file_name": {"S": os.path.splitext(file_name)[0]+".csv"},
+                    "mse": {"S": str(round(metrics[0],2))},
+                    "mae": {"S": str(round(metrics[1],2))}
+                }
+            )           
+            return "OK"
+        except Exception as ex:
+            print(ex)
+            return "BadRequest"
 
 
     def predict(self, model_name,file_name):
@@ -108,7 +86,7 @@ class ANN_logic:
         
         model = load_model(model_name + ".h5")
         X_test = pd.read_csv(file_name+".csv")
-        config = model.get_config() #-------------------------------------------------------------
+        config = model.get_config()
         numInputs = config["layers"][0]["config"]["batch_input_shape"][1]
         if(X_test.shape[1] != numInputs):
             return numInputs
@@ -128,12 +106,12 @@ class ANN_logic:
 
     # delete from dynamo db
     def delete_from_database(self, model_name):
-        # try:
+        try:
             table = boto3.resource("dynamodb").Table(table_name)
             table.delete_item(
                 Key = {'file_name': model_name+".csv"}
             )
-        # except Exception as e:
+        except Exception as e:
             print("No model in database")
 
 
