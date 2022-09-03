@@ -1,5 +1,6 @@
 from email import header
 from fileinput import filename
+from turtle import shape
 from sklearn.preprocessing import LabelEncoder
 import tensorflow as tf
 import os 
@@ -66,9 +67,10 @@ class ANN_logic:
 
         self.create_model(len(data.columns) - 1, 1)
 
-        self.model.fit(X_train, y_train, batch_size = batch_size, epochs = epochs, verbose = 1)
+        self.model.fit(X_train, y_train, batch_size = batch_size, epochs = epochs, verbose = 0)
 
         metrics = self.evaluate_model(X_test, y_test)
+        print(shape(metrics))
         # save model into local storage
         self.model.save(file_name+".h5")
         s3.upload_file(Filename =  file_name + ".h5", Bucket = bucket_name, Key = file_name +".h5")
